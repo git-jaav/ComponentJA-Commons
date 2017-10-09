@@ -1,0 +1,59 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>pe.jaav.common</groupId>
+  <artifactId>JACommon-UtilesJson</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>JACommon-UtilesJson</name>
+  
+    <properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>    
+        <jdk.version>1.8</jdk.version>        	        
+        <jackson.version>2.7.5</jackson.version>
+        <commonio.version>2.4</commonio.version>
+        <json.version>20160810</json.version>
+    </properties>
+    
+    <dependencies>
+             
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		        
+		<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>${json.version}</version>
+		</dependency>
+		        
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commonio.version}</version>
+        </dependency>
+        		        
+  	</dependencies>
+  	
+    <build>
+        <finalName>${pom.artifactId}</finalName>
+        <plugins>
+            <!-- Maven compiler plugin -->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+          
+</project>
