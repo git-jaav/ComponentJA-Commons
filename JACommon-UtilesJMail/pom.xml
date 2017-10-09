@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>pe.jaav.common</groupId>
   <artifactId>JACommon-UtilesJMail</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0</version>
   <name>JACommon-UtilesJMail</name>
 
   <properties>
