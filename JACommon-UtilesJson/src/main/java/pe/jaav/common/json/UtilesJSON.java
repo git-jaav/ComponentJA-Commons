@@ -34,12 +34,22 @@ public class UtilesJSON  {
 	private static final String RQ_PROP_APPJSON="application/json";
 	
 	
+	public static final String TAG_CODE_RESPONSE_ERROR="FAILED-CODE:";
+	
+	/**
+	 * @param urlParam
+	 * @return
+	 */
+	public static String getJson(String urlParam) {
+		return getJson(urlParam,true);
+	}
+	
 	/**
 	 * @param urlParam
 	 * @param claseObjeto
 	 * @return
 	 */
-	public static String getJson(String urlParam) {
+	public static String getJson(String urlParam,boolean evitarResponseCode) {
 		HttpURLConnection conn = null;
 		try {
 			URL url = new URL(urlParam);
@@ -47,9 +57,14 @@ public class UtilesJSON  {
 			conn.setRequestMethod(RQ_MET_GET);
 			conn.setRequestProperty("Accept", RQ_PROP_APPJSON);
 
-			if (conn.getResponseCode() != 200) {
-				throw new RuntimeException("Failed : HTTP error code : "+ conn.getResponseCode());
-			}											
+			if (conn.getResponseCode() !=HttpURLConnection.HTTP_OK) {
+				if(evitarResponseCode){
+					return null;
+				}else{
+					throw new RuntimeException(TAG_CODE_RESPONSE_ERROR+ conn.getResponseCode());
+				}																		
+			}
+			
 			//para obtener el Texto en el ENCODING correcto (UTF-8)     	    			
 			String json = getJSON_Encoding(conn, "UTF-8");		
 			
@@ -75,6 +90,15 @@ public class UtilesJSON  {
 	 * @return
 	 */
 	public static Object getObjectJson(String urlParam,  Class<?> claseObjeto) {
+		return getObjectJson(urlParam, claseObjeto,true);
+	}
+	
+	/**
+	 * @param urlParam
+	 * @param claseObjeto
+	 * @return
+	 */
+	public static Object getObjectJson(String urlParam,  Class<?> claseObjeto,boolean evitarResponseCode) {
 		HttpURLConnection conn = null;
 		try {
 			URL url = new URL(urlParam);
@@ -82,9 +106,13 @@ public class UtilesJSON  {
 			conn.setRequestMethod(RQ_MET_GET);
 			conn.setRequestProperty("Accept", RQ_PROP_APPJSON);
 
-			if (conn.getResponseCode() != 200) {
-				throw new RuntimeException("Failed : HTTP error code : "+ conn.getResponseCode());
-			}								
+			if (conn.getResponseCode() !=HttpURLConnection.HTTP_OK) {
+				if(evitarResponseCode){
+					return null;
+				}else{
+					throw new RuntimeException(TAG_CODE_RESPONSE_ERROR+ conn.getResponseCode());
+				}																		
+			}							
 			
 			//para obtener el Texto en el ENCODING correcto (UTF-8)
 			InputStream in = conn.getInputStream();
@@ -118,6 +146,16 @@ public class UtilesJSON  {
 	 * @return
 	 */
 	public static Object getObjectJsonFiltro(String urlParam,Object objData,  Class<?> claseObjeto) {
+		return getObjectJsonFiltro(urlParam, objData, claseObjeto, true);
+	}
+	
+	/**
+	 * @param urlParam
+	 * @param objData
+	 * @param claseObjeto
+	 * @return
+	 */
+	public static Object getObjectJsonFiltro(String urlParam,Object objData,  Class<?> claseObjeto,boolean evitarResponseCode) {
 		HttpURLConnection conn = null;
 		try {
 			URL url = new URL(urlParam);
@@ -141,7 +179,11 @@ public class UtilesJSON  {
 					&& conn.getResponseCode() != HttpURLConnection.HTTP_OK
 					&& conn.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED
 					) {
-					throw new RuntimeException("Failed : HTTP error code : "+ conn.getResponseCode());
+				if(evitarResponseCode){
+					return null;
+				}else{
+					throw new RuntimeException(TAG_CODE_RESPONSE_ERROR+ conn.getResponseCode());
+				}										
 			}
 
 			//para obtener el Texto en el ENCODING correcto (UTF-8)
@@ -170,9 +212,21 @@ public class UtilesJSON  {
 		return null;
 	}
 	
-	
-	
+	/**
+	 * @param urlParam
+	 * @param dataJson
+	 * @return
+	 */
 	public static String getJsonFiltro(String urlParam,String dataJson) {
+		return getJsonFiltro(urlParam, dataJson, true);
+	}
+	
+	/**
+	 * @param urlParam
+	 * @param dataJson
+	 * @return
+	 */
+	public static String getJsonFiltro(String urlParam,String dataJson,boolean evitarResponseCode) {
 		HttpURLConnection conn = null;
 		try {
 			URL url = new URL(urlParam);
@@ -194,11 +248,16 @@ public class UtilesJSON  {
 			os.write(jsonInBytes);
 			os.flush();			
 			
+
 			if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED
 					&& conn.getResponseCode() != HttpURLConnection.HTTP_OK
 					&& conn.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED
 					) {
-					throw new RuntimeException("Failed : HTTP error code : "+ conn.getResponseCode());
+				if(evitarResponseCode){
+					return null;
+				}else{
+					throw new RuntimeException(TAG_CODE_RESPONSE_ERROR+ conn.getResponseCode());
+				}										
 			}
 
 			//para obtener el Texto en el ENCODING correcto (UTF-8)
@@ -220,12 +279,24 @@ public class UtilesJSON  {
 		return null;
 	}
 	
+	
+	/** ...Evita por DEFAULT el response CODE
+	 * @param urlParam
+	 * @param typeReference
+	 * @return
+	 */
+	public static List<?> getListJson(String urlParam,TypeReference<?> typeReference){
+		return getListJson(urlParam, typeReference,true);
+	}
+			
+	
 	/**
 	 * @param urlParam
 	 * @param typeReference
 	 * @return
 	 */
-	public static List<?> getListJson(String urlParam,TypeReference<?> typeReference) {
+	public static List<?> getListJson(String urlParam,TypeReference<?> typeReference
+			,boolean evitarResponseCode) {
 		HttpURLConnection conn = null;
 		try {
 			URL url = new URL(urlParam);
@@ -233,9 +304,16 @@ public class UtilesJSON  {
 			conn.setRequestMethod(RQ_MET_GET);
 			conn.setRequestProperty("Accept", RQ_PROP_APPJSON);
 
-			if (conn.getResponseCode() != 200) {
-				throw new RuntimeException("Failed : HTTP error code : "+ conn.getResponseCode());
-			}								
+			if (conn.getResponseCode() !=HttpURLConnection.HTTP_OK) {
+				if(evitarResponseCode){
+					return null;
+				}else{
+					throw new RuntimeException(TAG_CODE_RESPONSE_ERROR+ conn.getResponseCode());
+				}																		
+			}				
+
+		
+			
 			//para obtener el Texto en el ENCODING correcto (UTF-8)
 			InputStream in = conn.getInputStream();
 	        String encoding = conn.getContentEncoding();	        
@@ -271,11 +349,32 @@ public class UtilesJSON  {
 	 * @param claseObjeto
 	 * @return
 	 */
-	public static List<?> getListJsonFiltro(String urlParam,Object objData,Class<?> claseObjeto) {
-		return getListJsonFiltro(urlParam, objData, new TypeReference<List<?>>() {});
+	public static List<?> getListJsonFiltro(String urlParam,Object objData,Class<?> claseObjeto,boolean evitarResponseCode) {
+		return getListJsonFiltro(urlParam, objData, new TypeReference<List<?>>() {},evitarResponseCode);
 	}
 	
-	public static List<?> getListJsonFiltro(String urlParam,Object objData,TypeReference<?> typeReference) {
+
+	/** Obtiene una lISTA JSON modo POST para enviar UN PARAM ...Por defecto evita el RESPONSE CODE
+	 * @param urlParam
+	 * @param objData
+	 * @param typeReference
+	 * @return
+	 */
+	public static List<?> getListJsonFiltro(String urlParam,Object objData,TypeReference<?> typeReference
+			) {
+		return getListJsonFiltro(urlParam, objData, new TypeReference<List<?>>() {},true);
+	}
+	
+	
+	/** Obtiene una lISTA JSON modo POST para enviar UN PARAM ... Permite evitar o no el RESPONSE CODE
+	 * @param urlParam
+	 * @param objData
+	 * @param typeReference
+	 * @param evitarResponseCode
+	 * @return
+	 */
+	public static List<?> getListJsonFiltro(String urlParam,Object objData,TypeReference<?> typeReference, 
+			boolean evitarResponseCode) {
 		HttpURLConnection conn = null;
 		try {
 			URL url = new URL(urlParam);
@@ -299,7 +398,11 @@ public class UtilesJSON  {
 					&& conn.getResponseCode() != HttpURLConnection.HTTP_OK
 					&& conn.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED
 					) {
-					throw new RuntimeException("Failed : HTTP error code : "+ conn.getResponseCode());
+				if(evitarResponseCode){
+					return null;
+				}else{
+					throw new RuntimeException(TAG_CODE_RESPONSE_ERROR+ conn.getResponseCode());
+				}										
 			}
 
 			//para obtener el Texto en el ENCODING correcto (UTF-8)
