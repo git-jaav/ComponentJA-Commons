@@ -16,5 +16,8 @@ mvn clean install
 cd .. && cd JACommon-UtilesReport
 mvn clean install
 
+cd .. && cd JASecurityCrypto-Utiles
+mvn clean install
+
 echo "***FIN BASH ****"
 echo "********************************************"
