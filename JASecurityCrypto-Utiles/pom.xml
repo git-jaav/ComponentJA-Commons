@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>pe.jaav.common</groupId>
+  <artifactId>JASecurityCrypto-Utiles</artifactId>
+  <version>1.0</version>
+  <name>JASecurityCrypto-Utiles</name>
+  
+    <properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>        
+    	<jdk.version>1.8</jdk.version>
+        
+    </properties>
+    
+    <repositories>
+	    <repository>
+	      <id>repo.spring.io</id>
+	      <url>http://repo.spring.io/milestone/</url>
+	    </repository>
+    </repositories>
+
+    <dependencies>
+
+      
+		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-rsa -->
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-rsa</artifactId>
+		    <version>1.0.5.RELEASE</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-core -->
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-core</artifactId>
+		    <version>5.0.0.RELEASE</version>
+		</dependency>
+		
+  
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.2</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+      
+</project>
