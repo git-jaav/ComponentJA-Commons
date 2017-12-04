@@ -25,7 +25,7 @@ public class UtilesCommons {
 
 	
 	/**VARIABLES DEL SISTEMA*/
-	public static ResourceBundle constanPropiedades = ResourceBundle.getBundle("mensajes",Locale.forLanguageTag("es"));
+	public static ResourceBundle constanPropiedades = ResourceBundle.getBundle("constantes",Locale.forLanguageTag("es"));
 
 	/** retornar valor de Property
 	 * @param prop
