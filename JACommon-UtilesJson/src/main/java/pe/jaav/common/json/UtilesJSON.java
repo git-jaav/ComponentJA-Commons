@@ -28,8 +28,8 @@ public class UtilesJSON  {
 	
 	private static final String RQ_MET_GET="GET";
 	private static final String RQ_MET_POST="POST";
-//	private static final String RQ_MET_PUT="PUT";
-//	private static final String RQ_MET_DELETE="DELETE";
+	private static final String RQ_MET_PUT="PUT";
+	private static final String RQ_MET_DELETE="DELETE";
 	
 	private static final String RQ_PROP_APPJSON="application/json";
 	
@@ -436,19 +436,51 @@ public class UtilesJSON  {
 		}
 		return null;
 	}
+
 	
-	/**
+	/** realizar el REQUEST PUT con un objeto en el BODY
+	 * @param urlParam
+	 * @param objData
+	 * @param claseObjeto
+	 * @return
+	 */
+	public static Object putObjectJson(String urlParam, Object objData, Class<?> claseObjeto) {
+		return requestObjectJson(urlParam, objData, claseObjeto, RQ_MET_PUT);
+	}
+	
+	/** realizar el REQUEST DELETE con un objeto en el BODY
+	 * @param urlParam
+	 * @param objData
+	 * @param claseObjeto
+	 * @return
+	 */
+	public static Object deleteObjectJson(String urlParam, Object objData, Class<?> claseObjeto) {
+		return requestObjectJson(urlParam, objData, claseObjeto, RQ_MET_DELETE);
+	}
+	
+	/** realizar el REQUEST POST con un objeto en el BODY
 	 * @param urlParam
 	 * @param objData
 	 * @param claseObjeto
 	 * @return
 	 */
 	public static Object postObjectJson(String urlParam, Object objData, Class<?> claseObjeto) {		
+		return requestObjectJson(urlParam, objData, claseObjeto, RQ_MET_POST);
+	}
+	
+	/**
+	 * @param urlParam
+	 * @param objData
+	 * @param claseObjeto
+	 * @param requestMethod
+	 * @return
+	 */
+	public static Object requestObjectJson(String urlParam, Object objData, Class<?> claseObjeto,String requestMethod) {
 		try {
 			URL url = new URL(urlParam);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setDoOutput(true);
-			conn.setRequestMethod(RQ_MET_POST);
+			conn.setRequestMethod(requestMethod);
 			conn.setRequestProperty("Content-Type", RQ_PROP_APPJSON);
 
 			
