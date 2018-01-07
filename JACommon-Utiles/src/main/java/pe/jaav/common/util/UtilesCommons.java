@@ -14,6 +14,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -1212,5 +1214,34 @@ public class UtilesCommons {
 			 System.out.println("TEST:A:"+randomNum);					
 		}		
 		return randomNum;
+	}
+	
+    
+	/** Obtener Número Con formato en String
+	 * @param pattern
+	 * @param value
+	 * @return
+	 */
+	static public String getNumeroFormat(String pattern, Double value ) {
+		String result="";
+		try{
+			if(value!=null){						    			    
+				/*
+			    NumberFormat currencyFormatter = 
+			        NumberFormat.getCurrencyInstance(FacesUtil.getSessionLocale());			    
+			    result = currencyFormatter.format(value);
+			    */			    
+			    DecimalFormat myFormatter = new DecimalFormat(pattern);
+				Locale locEN = Locale.ENGLISH;
+			    //myFormatter.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.getDefault(Locale.Category.FORMAT)));
+			    myFormatter.setDecimalFormatSymbols(new DecimalFormatSymbols(locEN));
+			    result = myFormatter.format(value);			      
+			}else{
+				result =null;
+			}	
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return result;
 	}
 }
