@@ -38,32 +38,54 @@ public class UtilesJSON  {
 	
 	/**
 	 * @param urlParam
-	 * @return
-	 */
-	public static String getJson(String urlParam) {
-		return getJson(urlParam,true);
-	}
-	
-	/**
-	 * @param urlParam
 	 * @param claseObjeto
 	 * @return
 	 */
-	public static String getJson(String urlParam,boolean evitarResponseCode) {
+	public static String getJson(String urlParam) {
+		return getJson(urlParam, null);
+	}
+	
+	
+	/** REQUEST GET simple
+	 * @param urlParam
+	 * @param mapHeader
+	 * @return
+	 */
+	public static String getJson(String urlParam,Map<String ,String> mapHeader) {
+		return requestJson(urlParam, mapHeader, RQ_MET_GET);	
+	}	
+	
+	/** REQUEST POT simple, con HEADER 
+	 * @param urlParam
+	 * @param mapHeader
+	 * @return
+	 */
+	public static String postJson(String urlParam,Map<String , String> mapHeader) {
+		return requestJson(urlParam, mapHeader, RQ_MET_POST);
+	}	
+	
+	/**
+	 * @param urlParam
+	 * @param mapHeader
+	 * @param requestMethod
+	 * @return
+	 */
+	public static String requestJson(String urlParam,Map<String , String> mapHeader, String requestMethod) {
 		HttpURLConnection conn = null;
 		try {
 			URL url = new URL(urlParam);
 			conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod(RQ_MET_GET);
+			conn.setRequestMethod(requestMethod);
 			conn.setRequestProperty("Accept", RQ_PROP_APPJSON);
 
-			if (conn.getResponseCode() !=HttpURLConnection.HTTP_OK) {
-				if(evitarResponseCode){
-					return null;
-				}else{
-					throw new RuntimeException(TAG_CODE_RESPONSE_ERROR+ conn.getResponseCode());
-				}																		
+			/**Verificar valores INPUT de HEADER*/			
+			setConnectioMapHeaderInput(conn, mapHeader);
+		
+			if (conn.getResponseCode() != 200) {
+				throw new RuntimeException(TAG_CODE_RESPONSE_ERROR+ conn.getResponseCode());
 			}
+			/**Actualizar valores OUTPUT de HEADER*/			
+			setConnectioMapHeaderOutput(conn, mapHeader);
 			
 			//para obtener el Texto en el ENCODING correcto (UTF-8)     	    			
 			String json = getJSON_Encoding(conn, "UTF-8");		
@@ -84,21 +106,27 @@ public class UtilesJSON  {
 		return null;
 	}
 	
-	/**
+
+	
+	/** REQUEST GET con retorno de un OBJETO de una determinada clase
 	 * @param urlParam
 	 * @param claseObjeto
 	 * @return
 	 */
 	public static Object getObjectJson(String urlParam,  Class<?> claseObjeto) {
-		return getObjectJson(urlParam, claseObjeto,true);
+		return getObjectJson(urlParam, claseObjeto, null);
 	}
 	
-	/**
+	
+	/** REQUEST GET con retorno de un OBJETO de una determinada clase, 
+	 * con parametros en el HEADER para el INPUT y OUTPUT
 	 * @param urlParam
 	 * @param claseObjeto
+	 * @param mapHeader
 	 * @return
 	 */
-	public static Object getObjectJson(String urlParam,  Class<?> claseObjeto,boolean evitarResponseCode) {
+	public static Object getObjectJson(String urlParam,  Class<?> claseObjeto,
+			Map<String , String> mapHeader) {
 		HttpURLConnection conn = null;
 		try {
 			URL url = new URL(urlParam);
@@ -106,19 +134,19 @@ public class UtilesJSON  {
 			conn.setRequestMethod(RQ_MET_GET);
 			conn.setRequestProperty("Accept", RQ_PROP_APPJSON);
 
-			if (conn.getResponseCode() !=HttpURLConnection.HTTP_OK) {
-				if(evitarResponseCode){
-					return null;
-				}else{
-					throw new RuntimeException(TAG_CODE_RESPONSE_ERROR+ conn.getResponseCode());
-				}																		
-			}							
+			/**Verificar valores INPUT de HEADER*/			
+			setConnectioMapHeaderInput(conn, mapHeader);
+
 			
-			//para obtener el Texto en el ENCODING correcto (UTF-8)
-			InputStream in = conn.getInputStream();
-	        String encoding = conn.getContentEncoding();	        
-	        encoding = encoding == null ? "UTF-8" : encoding; 
-	        String json = IOUtils.toString(in, encoding);  	        	    
+			if (conn.getResponseCode() != 200) {
+				throw new RuntimeException(TAG_CODE_RESPONSE_ERROR+ conn.getResponseCode());
+			}								
+			/**Actualizar valores OUTPUT de HEADER*/			
+			setConnectioMapHeaderOutput(conn, mapHeader);
+			
+			//para obtener el Texto en el ENCODING correcto (UTF-8)     	    			
+			String json = getJSON_Encoding(conn, "UTF-8");		
+    	    
 			
 			if(json!=null){
 				//MAPPER JASON TO OBJECT 
@@ -137,25 +165,28 @@ public class UtilesJSON  {
 			}
 		}
 		return null;
-	}
+	}	
 
-	/**
+	/** REQUEST POST con retorno de un OBJETO de una determinada clase, con objeto como FILTRO,
 	 * @param urlParam
 	 * @param objData
 	 * @param claseObjeto
 	 * @return
 	 */
 	public static Object getObjectJsonFiltro(String urlParam,Object objData,  Class<?> claseObjeto) {
-		return getObjectJsonFiltro(urlParam, objData, claseObjeto, true);
+		return getObjectJsonFiltro(urlParam, objData, claseObjeto,null);
 	}
 	
-	/**
+	/**REQUEST POST con retorno de un OBJETO de una determinada clase, con objeto como FILTRO,
+	 * con parametros en el HEADER para el INPUT y OUTPUT
 	 * @param urlParam
 	 * @param objData
 	 * @param claseObjeto
+	 * @param mapHeader
 	 * @return
 	 */
-	public static Object getObjectJsonFiltro(String urlParam,Object objData,  Class<?> claseObjeto,boolean evitarResponseCode) {
+	public static Object getObjectJsonFiltro(String urlParam,Object objData,  Class<?> claseObjeto,
+			Map<String,String> mapHeader) {
 		HttpURLConnection conn = null;
 		try {
 			URL url = new URL(urlParam);
@@ -163,7 +194,8 @@ public class UtilesJSON  {
 			conn.setDoOutput(true);
 			conn.setRequestMethod(RQ_MET_POST);
 			conn.setRequestProperty("Content-Type", RQ_PROP_APPJSON);
-
+			/**Verificar valores INPUT de HEADER*/			
+			setConnectioMapHeaderInput(conn, mapHeader);	
 			
 			//MAPPER OBJECT TO JASON
 			ObjectMapper mapper = new ObjectMapper();
@@ -173,24 +205,18 @@ public class UtilesJSON  {
 			OutputStream os = conn.getOutputStream();
 			os.write(jsonInBytes);
 			os.flush();
-			
-			
+						
 			if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED
 					&& conn.getResponseCode() != HttpURLConnection.HTTP_OK
 					&& conn.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED
 					) {
-				if(evitarResponseCode){
-					return null;
-				}else{
 					throw new RuntimeException(TAG_CODE_RESPONSE_ERROR+ conn.getResponseCode());
-				}										
 			}
-
-			//para obtener el Texto en el ENCODING correcto (UTF-8)
-			InputStream in = conn.getInputStream();
-	        String encoding = conn.getContentEncoding();	        
-	        encoding = encoding == null ? "UTF-8" : encoding; 
-	        String json = IOUtils.toString(in, encoding);  	       
+			/**Actualizar valores OUTPUT de HEADER*/			
+			setConnectioMapHeaderOutput(conn, mapHeader);
+			
+			//para obtener el Texto en el ENCODING correcto (UTF-8)     	    			
+			String json = getJSON_Encoding(conn, "UTF-8");		
 			
 			if(json!=null){			
 				//json = json.toLowerCase();//AUX
@@ -212,21 +238,23 @@ public class UtilesJSON  {
 		return null;
 	}
 	
-	/**
-	 * @param urlParam
-	 * @param dataJson
-	 * @return
-	 */
-	public static String getJsonFiltro(String urlParam,String dataJson) {
-		return getJsonFiltro(urlParam, dataJson, true);
-	}
 	
 	/**
 	 * @param urlParam
 	 * @param dataJson
 	 * @return
 	 */
-	public static String getJsonFiltro(String urlParam,String dataJson,boolean evitarResponseCode) {
+	public static String getJsonFiltro(String urlParam,String dataJson) {
+		return getJsonFiltro(urlParam, dataJson, null);
+	}
+	
+	/**
+	 * @param urlParam
+	 * @param dataJson
+	 * @param mapHeader
+	 * @return
+	 */
+	public static String getJsonFiltro(String urlParam,String dataJson,Map<String,String> mapHeader) {
 		HttpURLConnection conn = null;
 		try {
 			URL url = new URL(urlParam);
@@ -234,32 +262,33 @@ public class UtilesJSON  {
 			conn.setDoOutput(true);
 			conn.setRequestMethod(RQ_MET_POST);
 			conn.setRequestProperty("Content-Type", RQ_PROP_APPJSON);
-
+			/**Verificar valores INPUT de HEADER*/			
+			setConnectioMapHeaderInput(conn, mapHeader);					
 			
 			//MAPPER OBJECT TO JASON
-			//ObjectMapper mapper = new ObjectMapper();
-			//JSONObject json = new JSONObject(objData);						
-			
+			ObjectMapper mapper = new ObjectMapper();
+			//JSONObject json = new JSONObject(objData);			
+						
 			//byte[] jsonInBytes = mapper.writeValueAsBytes(objData);
 			byte[] jsonInBytes = dataJson.getBytes();
 			/////////////////////////
 			
 			OutputStream os = conn.getOutputStream();
 			os.write(jsonInBytes);
-			os.flush();			
+			os.flush();
 			
 
+			
 			if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED
 					&& conn.getResponseCode() != HttpURLConnection.HTTP_OK
 					&& conn.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED
 					) {
-				if(evitarResponseCode){
-					return null;
-				}else{
 					throw new RuntimeException(TAG_CODE_RESPONSE_ERROR+ conn.getResponseCode());
-				}										
 			}
 
+			/**Actualizar valores OUTPUT de HEADER*/			
+			setConnectioMapHeaderOutput(conn, mapHeader);
+			
 			//para obtener el Texto en el ENCODING correcto (UTF-8)
 			String json = getJSON_Encoding(conn, "UTF-8");		
 			
@@ -279,46 +308,45 @@ public class UtilesJSON  {
 		return null;
 	}
 	
-	
-	/** ...Evita por DEFAULT el response CODE
-	 * @param urlParam
-	 * @param typeReference
-	 * @return
-	 */
-	public static List<?> getListJson(String urlParam,TypeReference<?> typeReference){
-		return getListJson(urlParam, typeReference,true);
-	}
-			
+
 	
 	/**
 	 * @param urlParam
 	 * @param typeReference
 	 * @return
 	 */
-	public static List<?> getListJson(String urlParam,TypeReference<?> typeReference
-			,boolean evitarResponseCode) {
+	public static List<?> getListJson(String urlParam,TypeReference<?> typeReference) {
+		return getListJson(urlParam, typeReference, null);
+	}
+	
+	/**
+	 * @param urlParam
+	 * @param typeReference
+	 * @param mapHeader
+	 * @return
+	 */
+	public static List<?> getListJson(String urlParam,TypeReference<?> typeReference,
+			Map<String,String> mapHeader) {
 		HttpURLConnection conn = null;
 		try {
 			URL url = new URL(urlParam);
 			conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod(RQ_MET_GET);
 			conn.setRequestProperty("Accept", RQ_PROP_APPJSON);
-
-			if (conn.getResponseCode() !=HttpURLConnection.HTTP_OK) {
-				if(evitarResponseCode){
-					return null;
-				}else{
-					throw new RuntimeException(TAG_CODE_RESPONSE_ERROR+ conn.getResponseCode());
-				}																		
-			}				
-
-		
 			
-			//para obtener el Texto en el ENCODING correcto (UTF-8)
-			InputStream in = conn.getInputStream();
-	        String encoding = conn.getContentEncoding();	        
-	        encoding = encoding == null ? "UTF-8" : encoding; 
-	        String json = IOUtils.toString(in, encoding);  	        	    
+			/**Verificar valores INPUT de HEADER*/			
+			setConnectioMapHeaderInput(conn, mapHeader);		
+			
+			if (conn.getResponseCode() != 200) {
+				throw new RuntimeException(TAG_CODE_RESPONSE_ERROR+ conn.getResponseCode());
+			}								
+
+			/**Actualizar valores OUTPUT de HEADER*/			
+			setConnectioMapHeaderOutput(conn, mapHeader);	
+			
+			//para obtener el Texto en el ENCODING correcto (UTF-8)     	    			
+			String json = getJSON_Encoding(conn, "UTF-8");		
+    	    
 
 			//BufferedReader br = new BufferedReader(new InputStreamReader(
 				//(conn.getInputStream())));																
@@ -342,39 +370,42 @@ public class UtilesJSON  {
 		return null;
 	}
 	
-	
 	/** Abstraccion
 	 * @param urlParam
 	 * @param objData
 	 * @param claseObjeto
 	 * @return
 	 */
-	public static List<?> getListJsonFiltro(String urlParam,Object objData,Class<?> claseObjeto,boolean evitarResponseCode) {
-		return getListJsonFiltro(urlParam, objData, new TypeReference<List<?>>() {},evitarResponseCode);
+	public static List<?> getListJsonFiltro(String urlParam,Object objData,Class<?> claseObjeto) {
+		return getListJsonFiltro(urlParam, objData, new TypeReference<List<?>>() {});
 	}
 	
+	/**
+	 * @param urlParam
+	 * @param objData
+	 * @param typeReference
+	 * @return
+	 */
+	public static List<?> getListJsonFiltro(String urlParam,Object objData,TypeReference<?> typeReference) {	
+		return getListJsonFiltro(urlParam, objData, typeReference, null,true);
+	}
 
-	/** Obtiene una lISTA JSON modo POST para enviar UN PARAM ...Por defecto evita el RESPONSE CODE
-	 * @param urlParam
-	 * @param objData
-	 * @param typeReference
-	 * @return
-	 */
-	public static List<?> getListJsonFiltro(String urlParam,Object objData,TypeReference<?> typeReference
-			) {
-		return getListJsonFiltro(urlParam, objData, new TypeReference<List<?>>() {},true);
+	
+	public static List<?> getListJsonFiltro(String urlParam,Object objData,TypeReference<?> typeReference,
+			boolean evitarResponseCode) {	
+		return getListJsonFiltro(urlParam, objData, typeReference, null,evitarResponseCode);
 	}
 	
 	
-	/** Obtiene una lISTA JSON modo POST para enviar UN PARAM ... Permite evitar o no el RESPONSE CODE
+	/**
 	 * @param urlParam
 	 * @param objData
 	 * @param typeReference
-	 * @param evitarResponseCode
+	 * @param mapHeader
 	 * @return
 	 */
-	public static List<?> getListJsonFiltro(String urlParam,Object objData,TypeReference<?> typeReference, 
-			boolean evitarResponseCode) {
+	public static List<?> getListJsonFiltro(String urlParam,Object objData,TypeReference<?> typeReference,
+			Map<String,String> mapHeader,boolean evitarResponseCode) {
 		HttpURLConnection conn = null;
 		try {
 			URL url = new URL(urlParam);
@@ -382,7 +413,8 @@ public class UtilesJSON  {
 			conn.setDoOutput(true);
 			conn.setRequestMethod(RQ_MET_POST);
 			conn.setRequestProperty("Content-Type", RQ_PROP_APPJSON);
-
+			/**Verificar valores INPUT de HEADER*/			
+			setConnectioMapHeaderInput(conn, mapHeader);	
 			
 			//MAPPER OBJECT TO JASON
 			ObjectMapper mapper = new ObjectMapper();
@@ -391,8 +423,7 @@ public class UtilesJSON  {
 			
 			OutputStream os = conn.getOutputStream();
 			os.write(jsonInBytes);
-			os.flush();
-			
+			os.flush();			
 			
 			if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED
 					&& conn.getResponseCode() != HttpURLConnection.HTTP_OK
@@ -402,14 +433,14 @@ public class UtilesJSON  {
 					return null;
 				}else{
 					throw new RuntimeException(TAG_CODE_RESPONSE_ERROR+ conn.getResponseCode());
-				}										
+				}					
 			}
 
-			//para obtener el Texto en el ENCODING correcto (UTF-8)
-			InputStream in = conn.getInputStream();
-	        String encoding = conn.getContentEncoding();	        
-	        encoding = encoding == null ? "UTF-8" : encoding; 
-	        String json = IOUtils.toString(in, encoding);  	       
+			/**Actualizar valores OUTPUT de HEADER*/			
+			setConnectioMapHeaderOutput(conn, mapHeader);
+			
+			//para obtener el Texto en el ENCODING correcto (UTF-8)     	    			
+			String json = getJSON_Encoding(conn, "UTF-8");		    
 			
 			if(json!=null){
 				//MAPPER JASON TO OBJECT
@@ -436,9 +467,9 @@ public class UtilesJSON  {
 		}
 		return null;
 	}
-
 	
-	/** realizar el REQUEST PUT con un objeto en el BODY
+	
+	/** Realizar el REQUEST PUT con un objeto en el BODY
 	 * @param urlParam
 	 * @param objData
 	 * @param claseObjeto
@@ -446,6 +477,18 @@ public class UtilesJSON  {
 	 */
 	public static Object putObjectJson(String urlParam, Object objData, Class<?> claseObjeto) {
 		return requestObjectJson(urlParam, objData, claseObjeto, RQ_MET_PUT);
+	}
+
+	/** Realizar el REQUEST PUT con un objeto en el BODY, con el MAP HEADER como parametro
+	 * @param urlParam
+	 * @param objData
+	 * @param claseObjeto
+	 * @param mapHeader
+	 * @return
+	 */
+	public static Object putObjectJson(String urlParam, Object objData, Class<?> claseObjeto,
+			Map<String,String> mapHeader) {
+		return requestObjectJson(urlParam, objData, claseObjeto, RQ_MET_PUT,mapHeader,true);
 	}
 	
 	/** realizar el REQUEST DELETE con un objeto en el BODY
@@ -458,14 +501,38 @@ public class UtilesJSON  {
 		return requestObjectJson(urlParam, objData, claseObjeto, RQ_MET_DELETE);
 	}
 	
-	/** realizar el REQUEST POST con un objeto en el BODY
+	/** realizar el REQUEST DELETE con un objeto en el BODY , y recibe el MAP HEADER
+	 * @param urlParam
+	 * @param objData
+	 * @param claseObjeto
+	 * @param mapHeader
+	 * @return
+	 */
+	public static Object deleteObjectJson(String urlParam, Object objData, Class<?> claseObjeto,
+			Map<String,String> mapHeader) {
+		return requestObjectJson(urlParam, objData, claseObjeto, RQ_MET_DELETE,mapHeader,true);
+	}
+	
+	/** Realizar el REQUEST POST con un objeto en el BODY
 	 * @param urlParam
 	 * @param objData
 	 * @param claseObjeto
 	 * @return
 	 */
 	public static Object postObjectJson(String urlParam, Object objData, Class<?> claseObjeto) {		
-		return requestObjectJson(urlParam, objData, claseObjeto, RQ_MET_POST);
+		return requestObjectJson(urlParam, objData, claseObjeto, RQ_MET_POST,null,true);
+	}
+
+	/** Realizar el REQUEST POST con un objeto en el BODY, con el MAP HEADER como parametro
+	 * @param urlParam
+	 * @param objData
+	 * @param claseObjeto
+	 * @param mapHeader
+	 * @return
+	 */
+	public static Object postObjectJson(String urlParam, Object objData, Class<?> claseObjeto,
+			Map<String,String> mapHeader) {		
+		return requestObjectJson(urlParam, objData, claseObjeto, RQ_MET_POST,mapHeader,true);
 	}
 	
 	/**
@@ -475,7 +542,22 @@ public class UtilesJSON  {
 	 * @param requestMethod
 	 * @return
 	 */
-	public static Object requestObjectJson(String urlParam, Object objData, Class<?> claseObjeto,String requestMethod) {
+	public static Object requestObjectJson(String urlParam, Object objData, Class<?> claseObjeto,String requestMethod
+			) {
+		return requestObjectJson(urlParam, objData, claseObjeto, requestMethod,null,true);
+	}
+	
+
+	/**
+	 * @param urlParam
+	 * @param objData
+	 * @param claseObjeto
+	 * @param requestMethod
+	 * @param mapHeader
+	 * @return
+	 */
+	public static Object requestObjectJson(String urlParam, Object objData, Class<?> claseObjeto,String requestMethod,
+			Map<String,String> mapHeader,boolean evitarResponseCode) {
 		try {
 			URL url = new URL(urlParam);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -483,6 +565,8 @@ public class UtilesJSON  {
 			conn.setRequestMethod(requestMethod);
 			conn.setRequestProperty("Content-Type", RQ_PROP_APPJSON);
 
+			/**Verificar valores INPUT de HEADER*/			
+			setConnectioMapHeaderInput(conn, mapHeader);	
 			
 			//MAPPER OBJECT TO JASON
 			ObjectMapper mapper = new ObjectMapper();
@@ -498,14 +582,76 @@ public class UtilesJSON  {
 					&& conn.getResponseCode() != HttpURLConnection.HTTP_OK
 					&& conn.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED
 					) {
-					throw new RuntimeException("Failed : HTTP error code : "+ conn.getResponseCode());
+				if(evitarResponseCode){
+					return null;
+				}else{
+					throw new RuntimeException(TAG_CODE_RESPONSE_ERROR+ conn.getResponseCode());
+				}
+					
+			}
+		
+			/**Actualizar valores OUTPUT de HEADER*/			
+			setConnectioMapHeaderOutput(conn, mapHeader);
+					
+			//para obtener el Texto en el ENCODING correcto (UTF-8)     	    			
+			String json = getJSON_Encoding(conn, "UTF-8");
+			
+			//MAPPER JASON TO OBJECT 
+			if(json!=null){
+				ObjectMapper mapperJsonToObject = new ObjectMapper();			
+				Object objetoResult  = mapperJsonToObject.readValue(json,claseObjeto);			
+				conn.disconnect();				
+				return objetoResult;
+			}
+			
+			
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * @param urlParam
+	 * @param claseObjeto
+	 * @return
+	 */
+	public static Object postObjectJson(String urlParam, Class<?> claseObjeto) {				
+		return postObjectJsonMapHead(urlParam, claseObjeto,null);
+	}
+	
+	/**
+	 * @param urlParam
+	 * @param claseObjeto
+	 * @return
+	 */
+	public static Object postObjectJsonMapHead(String urlParam, Class<?> claseObjeto,
+			Map<String,String> mapHeader) {		
+		try {
+			URL url = new URL(urlParam);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setDoOutput(true);
+			conn.setRequestMethod(RQ_MET_POST);
+			conn.setRequestProperty("Content-Type", RQ_PROP_APPJSON);			
+			/**Verificar valores INPUT de HEADER*/			
+			setConnectioMapHeaderInput(conn, mapHeader);	
+			
+			//SIN CONTEN DATA						
+			if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED
+					&& conn.getResponseCode() != HttpURLConnection.HTTP_OK
+					&& conn.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED
+					) {
+					throw new RuntimeException(TAG_CODE_RESPONSE_ERROR+ conn.getResponseCode());
 			}
 
-			//para obtener el Texto en el ENCODING correcto (UTF-8)
-			InputStream in = conn.getInputStream();
-	        String encoding = conn.getContentEncoding();	        
-	        encoding = encoding == null ? "UTF-8" : encoding; 
-	        String json = IOUtils.toString(in, encoding);  	  
+			/**Actualizar valores OUTPUT de HEADER*/			
+			setConnectioMapHeaderOutput(conn, mapHeader);
+			
+			//para obtener el Texto en el ENCODING correcto (UTF-8)     	    			
+			String json = getJSON_Encoding(conn, "UTF-8");		
+
 	        
 			//BufferedReader br = new BufferedReader(new InputStreamReader(
 				//		(conn.getInputStream())));
@@ -527,40 +673,11 @@ public class UtilesJSON  {
 		return null;
 	}
 	
-    /**Servicio para obtener un OBJETO JSON*/
-    public JSONObject getJSONObject(String urlStr,String indica){
-    	JSONObject objeto = null;
-    	try {
-    		URL url = new URL(urlStr);
-    		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-    		conn.setRequestMethod(RQ_MET_GET);
-    		conn.setRequestProperty("Accept",RQ_PROP_APPJSON);
 
-    		if (conn.getResponseCode() != 200) {
-    			throw new RuntimeException("Failed : HTTP error code : "
-    					+ conn.getResponseCode());
-    		}
-    		
-    		InputStream in = conn.getInputStream(); 
-	        String encoding = conn.getContentEncoding();	        
-	        encoding = encoding == null ? "UTF-8" : encoding; 
-	        String json = IOUtils.toString(in, encoding); 
-	        objeto = new JSONObject(json); 	        	     
-	        
-    		conn.disconnect();
-    	} catch (MalformedURLException e) {
-
-    		e.printStackTrace();
-    	  } catch (IOException e) {
-
-    		e.printStackTrace();
-
-    	  }
-    	return objeto;
-    }
-
-    /*** GEENERALES
-     * @throws IOException ***/
+    
+    /******************************************************************************/
+    /*** METODOS GENERALES */
+    /******************************************************************************/
     
     public static String getJSON_Encoding(HttpURLConnection conn,String encode) throws IOException{
     	
@@ -585,13 +702,46 @@ public class UtilesJSON  {
     	StringTokenizer stToken = new StringTokenizer(jsonList);
     	if(stToken.hasMoreElements()){
     		String token = stToken.nextToken();
-    		//logica , siempre en cuando el SOURCE JSON sea v√°lido ....
+    		//logica , siempre en cuando el SOURCE JSON sea v·lido ....
     		if((""+token.charAt(0)).equals("[")){
     			result = true;
     		}
     	}    	    	
     	return result;
     }
+    
+    
+    /***Verificar valores INPUT de HEADER
+     * @param conn
+     * @param mapHeader
+     */
+    public static void setConnectioMapHeaderInput(HttpURLConnection conn,
+    					Map<String,String> mapHeader){		
+		if(conn != null && mapHeader!=null && mapHeader.size()>0){				
+			//conn.getHeaderFields().putAll(mapHeader);	
+			for(String key : mapHeader.keySet()){
+				conn.setRequestProperty(key, mapHeader.get(key));	
+			}				
+		}    	
+    }
+    
+    public static void setConnectioMapHeaderOutput(HttpURLConnection conn,
+			Map<String,String> mapHeader){		
+    	if(conn!=null && mapHeader!=null && mapHeader.size()>0){    	
+    		for(String key : mapHeader.keySet()){
+    			if(conn.getHeaderFields().containsKey(key)){
+    				String conten = "";
+    				for(String value : conn.getHeaderFields().get(key)){
+    					conten = conten+""+value+" ";
+    				}    				    				
+    				mapHeader.put(key,conten);    				
+    			}
+    			
+    		}					
+    	} 	
+    }
+    
+
     
     /** Devuelve el elemento (indexNode)  JSON de una lista JSON (jsonList) enviada
      * @param json
@@ -681,5 +831,35 @@ public class UtilesJSON  {
 		}   
     	return null;
     }    
-    
+
+    /**Servicio para obtener un OBJETO JSON*/
+    public JSONObject getJSONObject(String urlStr,String indica){
+    	JSONObject objeto = null;
+    	try {
+    		URL url = new URL(urlStr);
+    		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    		conn.setRequestMethod(RQ_MET_GET);
+    		conn.setRequestProperty("Accept",RQ_PROP_APPJSON);
+
+    		if (conn.getResponseCode() != 200) {
+    			throw new RuntimeException(TAG_CODE_RESPONSE_ERROR
+    					+ conn.getResponseCode());
+    		}
+    		
+			//para obtener el Texto en el ENCODING correcto (UTF-8)     	    			
+			String json = getJSON_Encoding(conn, "UTF-8");		
+ 	        
+	        objeto = new JSONObject(json); 	        	     
+	        
+    		conn.disconnect();
+    	} catch (MalformedURLException e) {
+
+    		e.printStackTrace();
+    	  } catch (IOException e) {
+
+    		e.printStackTrace();
+
+    	  }
+    	return objeto;
+    }    
 }
