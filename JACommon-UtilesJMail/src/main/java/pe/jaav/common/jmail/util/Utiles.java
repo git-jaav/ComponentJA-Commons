@@ -10,20 +10,20 @@ public class Utiles {
 
 	
 	/**VARIABLES DEL SISTEMA*/
-	public static ResourceBundle constanPropiedades = ResourceBundle.getBundle("mensajes",Locale.forLanguageTag("es"));
+	//public static ResourceBundle constanPropiedades = ResourceBundle.getBundle("mensajes",Locale.forLanguageTag("es"));
 
 	/** retornar valor de Property
 	 * @param prop
 	 * @return
 	 */
-	public static String getConstantProperty(String prop){				
+	//public static String getConstantProperty(String prop){				
 		//constanPropiedades.getLocale().setDefault(Locale.forLanguageTag("es"));
-		if(constanPropiedades.containsKey(prop)){
-			return constanPropiedades.getString(prop);	
-		}else{
-			return "[Definir mensaje]";
-		}				
-	}
+	//	if(constanPropiedades.containsKey(prop)){
+			//return constanPropiedades.getString(prop);	
+		//}else{
+			//return "[Definir mensaje]";
+		//}				
+	//}
 	
 	
 	/*** PARAMETROS GENERALES ***/
@@ -45,8 +45,8 @@ public class Utiles {
 	//Negativo
 	public static final String NO_db = "N";
 
-	public static final String SI_desc = getConstantProperty("CONST_SI_DESC_CAP");
-	public static final String NO_desc = getConstantProperty("CONST_SI_NO_DESC_CAP");
+	//public static final String SI_desc = getConstantProperty("CONST_SI_DESC_CAP");
+	//public static final String NO_desc = getConstantProperty("CONST_SI_NO_DESC_CAP");
 	public static final String DELETE_db = "D";
 	public static final String UPDATE_db = "U";
 	public static final String INSERT_db = "I";
