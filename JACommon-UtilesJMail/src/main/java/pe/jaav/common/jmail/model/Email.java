@@ -21,10 +21,18 @@ public class Email {
 	
 	private String subject;
 	private String body;
+	private String textBody;
 	
 	private String correoDestinos[];
 	private String correoDestino;	
 	private List<String> listCorreoDestinos;
+	
+	private String correoDestinoCC;	
+	private List<String> listCorreoDestinosCC;
+	
+	private String correoDestinoBCC;	
+	private List<String> listCorreoDestinosBCC;
+
 	
 	private Date correoFecha;
 	private Date remitente;
@@ -283,6 +291,56 @@ public class Email {
 
 	public void setMapvariablesValores(Map<String, String> mapvariablesValores) {
 		this.mapvariablesValores = mapvariablesValores;
+	}
+
+
+	public String getTextBody() {
+		return textBody;
+	}
+
+
+	public void setTextBody(String textBody) {
+		this.textBody = textBody;
+	}
+
+
+	public String getCorreoDestinoCC() {
+		return correoDestinoCC;
+	}
+
+
+	public void setCorreoDestinoCC(String correoDestinoCC) {
+		this.correoDestinoCC = correoDestinoCC;
+	}
+
+
+	public List<String> getListCorreoDestinosCC() {
+		return listCorreoDestinosCC;
+	}
+
+
+	public void setListCorreoDestinosCC(List<String> listCorreoDestinosCC) {
+		this.listCorreoDestinosCC = listCorreoDestinosCC;
+	}
+
+
+	public String getCorreoDestinoBCC() {
+		return correoDestinoBCC;
+	}
+
+
+	public void setCorreoDestinoBCC(String correoDestinoBCC) {
+		this.correoDestinoBCC = correoDestinoBCC;
+	}
+
+
+	public List<String> getListCorreoDestinosBCC() {
+		return listCorreoDestinosBCC;
+	}
+
+
+	public void setListCorreoDestinosBCC(List<String> listCorreoDestinosBCC) {
+		this.listCorreoDestinosBCC = listCorreoDestinosBCC;
 	}
 
 	

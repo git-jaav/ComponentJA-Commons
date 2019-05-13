@@ -32,7 +32,7 @@ public class EmailService {
 							Email email = construirMail(correoDestinos, subject, bodyPlantilla, pathFilesAtached, correoFecha, mapvariablesValores);
 							email = EmailService.setEmailVariablesGenerales(email);
 							if(email!=null){
-								if(EmailService.sendMail(Utiles.SI_db,email)){
+								if(EmailService.enviarEmail(email)){
 									result =1;	
 								}else{
 									result =-5;	
@@ -73,6 +73,39 @@ public class EmailService {
 	 * -5:	No se pudo enviar el correo. Sucedió un error en el envío.	 * 
 	 */
 	public static int enviarEmail(Email email,boolean contienePlantilla){
+		return enviarEmail(email, contienePlantilla,false);
+	}
+
+	/**Envía el correo electrónico de acuerdo a los parámetros estandar  de correo
+	 * Con la implementacion de SES de AWS
+	 * @param email: el objeto del Email
+	 * @param contienePlantilla: si posee o no plantilla de correo
+	 * @return
+	 * 1:	si el envío fu exitos
+	 * 0:	si hubo una excepción
+	 * -1:	Si no se recibió una plantilla válida
+	 * -2:	No se encontraron correos destino
+	 * -3:	No se encontró un motivo del correo (SUBJECT)
+	 * -4:	No se recibió el objeto de Correo. (Algún parámetro erróneo)
+	 * -5:	No se pudo enviar el correo. Sucedió un error en el envío.	 * 
+	 */
+	public static int enviarEmailAWS(Email email,boolean contienePlantilla){
+		return enviarEmail(email, contienePlantilla,true);
+	}
+	
+	/**Envía el correo electrónico de acuerdo a los parámetros estandar  de correo
+	 * @param email: el objeto del Email
+	 * @param contienePlantilla: si posee o no plantilla de correo
+	 * @return
+	 * 1:	si el envío fu exitos
+	 * 0:	si hubo una excepción
+	 * -1:	Si no se recibió una plantilla válida
+	 * -2:	No se encontraron correos destino
+	 * -3:	No se encontró un motivo del correo (SUBJECT)
+	 * -4:	No se recibió el objeto de Correo. (Algún parámetro erróneo)
+	 * -5:	No se pudo enviar el correo. Sucedió un error en el envío.	 * 
+	 */
+	public static int enviarEmail(Email email,boolean contienePlantilla, boolean implemntarAwsMail){
 		int result =0;
 		try{			
 			if(email!=null){				
@@ -86,11 +119,22 @@ public class EmailService {
 					if(email.getListCorreoDestinos()!=null){
 						if(email.getListCorreoDestinos().size()>0){
 							if(email.getSubject()!=null && !"".equals(email.getSubject()+"")){
-								if(EmailService.enviarEmail(email)){
-									result =1;	
-								}else{
-									result =-5;	
-								}								
+								/* VERIFICAR TIPO DE IMPLEMENTACION*/
+								if(implemntarAwsMail) {
+									//AWS - SES
+									if(EmailService.enviarEmailAWS(email)){
+										result =1;	
+									}else{
+										result =-5;	
+									}
+								}else {
+									//DEFAULT
+									if(EmailService.enviarEmail(email)){
+										result =1;	
+									}else{
+										result =-5;	
+									}
+								}														
 							}else{
 								result =-3;
 							}
@@ -112,6 +156,22 @@ public class EmailService {
 		}
 		return result;
 	}	
+	
+	
+	/** Implementacion MAIL SES
+	 * @param email
+	 * @return
+	 */
+	public static  boolean enviarEmailAWS(Email email) {
+		EmailServiceAWS sesEmail = new EmailServiceAWS();
+		sesEmail.setParametrosEmail(email);
+		try {
+			return sesEmail.sendEmail();
+		} catch (Exception e) {			
+			e.printStackTrace();
+		} 
+		return false;
+	}
 	
 	public static Email construirMail(Email objEmail, Map<String,String> mapvariablesValores){		
 		/***VARIABLES PROPIOS DE LA TAREA:*/
@@ -192,16 +252,7 @@ public class EmailService {
 	}		
 	return email;
 }
-	
-	public static boolean sendMail(String actiboJB,Email email){
-		/**CONFIG CONFIG EN JBOSS O EN MISMA APLICACIÓN*/
-		actiboJB =Utiles.NO_db;		
-		if(Utiles.SI_db.equals(actiboJB)){
-			return sendMail(email);
-		}else{
-			return enviarEmail(email);
-		}
-	}
+
 	
 	
 	public static Email setEmailParametrosConexion(Email email,
@@ -221,14 +272,6 @@ public class EmailService {
 		return email;
 	}
 			
-	
-	/**llamada al Servicio de correo con la configuración en JB y Java Mail */
-	public static boolean sendMail(Email email){
-		//EmailServiceJB emaliServ = new EmailServiceJB();
-		//String [] destino = {"araucoj@royalsystems.net"};
-		//EmailServlet.enviarEmail(destino,"SUBJECT", "XXXXXXXX", null,Utiles.getFechaHoy());
-		return false;		
-	}
 	
 	/**llamada al Servicio de correo con la configuración propia del JavaMail */
 	public static boolean enviarEmail(Email email){

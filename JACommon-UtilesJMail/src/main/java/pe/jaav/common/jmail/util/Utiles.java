@@ -75,4 +75,91 @@ public class Utiles {
 		Date now = calendar.getTime();
 		return now;
 	}
+	
+
+	/******/
+	public static boolean esVacio(String str) {
+		if (str == null || str.trim().isEmpty()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean noEsVacio(String str) {
+		return !esVacio(str);
+	}
+
+	public static <E> boolean esVacio(E[] array) {
+		if (array == null || array.length == 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public static boolean esVacio(Date date) {
+		if (date == null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean noEsVacio(Date date) {
+		return !esVacio(date);
+	}
+	
+	public static boolean noEsVacio(Integer integer) {
+		return !esVacio(integer);
+	}
+
+	public static boolean esVacio(Integer integer) {
+		if (integer == null || integer.compareTo(INTEGER_ZERO) == 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean esVacio(Long longValue) {
+		if (longValue == null || longValue.compareTo(LONG_ZERO) == 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean noEsVacio(Long longValue) {
+		return !esVacio(longValue);
+	}
+
+	public static <E> boolean noEsVacio(E[] array) {
+		return !esVacio(array);
+	}
+
+	public static <E> boolean esVacio(List<E> list) {
+		if (list == null || list.isEmpty()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static <K, V> boolean esVacio(Map<K, V> map) {
+		if (map == null || map.isEmpty()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static <E> boolean noEsVacio(List<E> list) {
+		return !esVacio(list);
+	}
+
+	public static <K, V> boolean noEsVacio(Map<K, V> map) {
+		return !esVacio(map);
+	}
+	
 }
